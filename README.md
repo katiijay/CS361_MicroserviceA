@@ -7,7 +7,7 @@ You can utilize a GET method to retrive the results with the following required 
 
 - lat=(numeric value between -90 and 90)
 - long=(numeric value between -180 and 180)
-   date=(date formatted as YYYYMMDD)
+- date=(date formatted as YYYYMMDD)
   
 example of these params in the proper format: 
 - https://katiijay.pythonanywhere.com/forecast?lat=47.67043968751403&long=-122.5422167015877&date=20250802
