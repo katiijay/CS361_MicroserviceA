@@ -3,7 +3,6 @@
 import requests
 from datetime import datetime 
 from datetime import timedelta
-from requests import RequestException
 
 
 def get_request(url=str, params=dict):
