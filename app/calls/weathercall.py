@@ -3,6 +3,7 @@
 import requests
 from datetime import datetime 
 from datetime import timedelta
+from requests import RequestException
 
 
 def get_request(url=str, params=dict):
@@ -64,10 +65,10 @@ def get_weather(lat=float, long=float, date=str):
     max_date = (datetime.today() + timedelta(days=14)).date()
     if datetime.strptime(date_converted, '%Y-%m-%d').date() > max_date:
         return f"Date is too far in the future to be forecasted, please request a date on or before {max_date}", 400
-    if lat < -90 and lat > 90:
-        return f"Inappropriate range for Latitude", 400
-    if long < -180 and long > 180:
-        return f"Inappropriate range for Longitude", 400
+    if float(lat) < -90 or float(lat) > 90:
+        return "Inappropriate range for Latitude", 400
+    if float(long) < -180 or float(long) > 180:
+        return "Inappropriate range for Longitude", 400
     
     params = {
         'latitude': lat,
