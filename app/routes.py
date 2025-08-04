@@ -12,7 +12,6 @@ def get_forecast():
     try:
         results = get_weather(latitude, longitude, date)
     except error.HTTPError as err:
-        print(err.code)
         return err.code
     #if date < datetime.today():
     #    raise ValueError('Cannot retrieve a forecast for a day that has already occurred')
