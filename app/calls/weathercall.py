@@ -10,6 +10,34 @@ def get_request(url=str, params=dict):
     responses = requests.get(url=url, params=params)
     return responses.json()
 
+def weather_code_helper(code=int):
+    # determines friendly name of weather code.
+    weather_code = 'unknown'
+    if   code == 0:  weather_code = 'clear'
+    elif code == 1:  weather_code = 'mostly-clear'
+    elif code == 2:  weather_code = 'partly-cloudy'
+    elif code == 3:  weather_code = 'overcast'
+    elif code == 45: weather_code = 'fog'
+    elif code == 48: weather_code = 'rime-fog'
+    elif code == 51: weather_code = 'light-drizzle'
+    elif code == 53: weather_code = 'moderate-drizzle'
+    elif code == 55: weather_code = 'dense-drizzle'
+    elif code == 56: weather_code = 'light-freezing-drizzle'
+    elif code == 57: weather_code = 'dense-freezing-drizzle'
+    elif code == 66: weather_code = 'light-freezing-rain'
+    elif code == 67: weather_code = 'heavy-freezing-rain'
+    elif code == 73: weather_code = 'moderate-snowfall'
+    elif code == 77: weather_code = 'snowflakes'
+    elif code == 95: weather_code = 'thunderstorm'
+    elif code == 80 or code == 61: weather_code = 'light-rain'
+    elif code == 81 or code == 63: weather_code = 'moderate-rain'
+    elif code == 82 or code == 65: weather_code = 'heavy-rain'
+    elif code == 71 or code == 85: weather_code = 'slight-snowfall'
+    elif code == 86 or code == 75: weather_code = 'heavy-snowfall'
+    elif code == 96 or code == 99: weather_code = 'thunderstorm-with-hail'
+
+    return weather_code
+
 
 def statistics_builder(results=dict, param=str):
     # builds out the statistical values and scale for using across different forecast measures. 
@@ -36,6 +64,10 @@ def get_weather(lat=float, long=float, date=str):
     max_date = (datetime.today() + timedelta(days=14)).date()
     if datetime.strptime(date_converted, '%Y-%m-%d').date() > max_date:
         return f"Date is too far in the future to be forecasted, please request a date on or before {max_date}", 400
+    if lat < -90 and lat > 90:
+        return f"Inappropriate range for Latitude", 400
+    if long < -180 and long > 180:
+        return f"Inappropriate range for Longitude", 400
     
     params = {
         'latitude': lat,
@@ -49,7 +81,6 @@ def get_weather(lat=float, long=float, date=str):
         'end_date': date_converted,
     }
     weather_results = get_request(url=url, params=params)
-    print(weather_results)
     results = {}
 
     # finding max wind_speed and putting into results
@@ -88,53 +119,7 @@ def get_weather(lat=float, long=float, date=str):
     for val in weather_vals:
         val_list.append(val)
     weather_code_daily = max(set(val_list), key = val_list.count)
-    print(weather_code_daily)
-    # determines friendly name of weather code. 
-    weather_code = 'unknown'
-    if weather_code_daily == 0: 
-        weather_code = 'clear'
-    elif weather_code_daily == 1: 
-        weather_code = 'mostly-clear'
-    elif weather_code_daily == 2: 
-        weather_code = 'partly-cloudy'
-    elif weather_code_daily == 3: 
-        weather_code = 'overcast'
-    elif weather_code_daily == 45: 
-        weather_code = 'fog'
-    elif weather_code_daily == 48: 
-        weather_code = 'rime-fog'
-    elif weather_code_daily == 51: 
-        weather_code = 'light-drizzle'
-    elif weather_code_daily == 53: 
-        weather_code = 'moderate-drizzle'
-    elif weather_code_daily == 55: 
-        weather_code = 'dense-drizzle'
-    elif weather_code_daily == 80 or weather_code_daily == 61: 
-        weather_code = 'light-rain'
-    elif weather_code_daily == 81 or weather_code_daily == 63: 
-        weather_code = 'moderate-rain'
-    elif weather_code_daily == 82 or weather_code_daily == 65: 
-        weather_code = 'heavy-rain'
-    elif weather_code_daily == 56: 
-        weather_code = 'light-freezing-drizzle'
-    elif weather_code_daily == 57: 
-        weather_code = 'dense-freezing-drizzle'
-    elif weather_code_daily == 66: 
-        weather_code = 'light-freezing-rain'
-    elif weather_code_daily == 67: 
-        weather_code = 'heavy-freezing-rain'
-    elif weather_code_daily == 71 or weather_code_daily == 85: 
-        weather_code = 'slight-snowfall'
-    elif weather_code_daily == 73: 
-        weather_code = 'moderate-snowfall'
-    elif weather_code_daily == 86 or weather_code_daily == 75: 
-        weather_code = 'heavy-snowfall'
-    elif weather_code_daily == 77: 
-        weather_code = 'snowflakes'
-    elif weather_code_daily == 95: 
-        weather_code = 'thunderstorm'
-    elif weather_code_daily == 96 or weather_code_daily == 99: 
-        weather_code = 'thunderstorm-with-hail'
+    weather_code = weather_code_helper(weather_code_daily)
 
     dict_vals =  {'weather_code': weather_code_daily, 'weather_code_name': weather_code, 'scale':'WMO-CODE'}
     results['weather_code'] = dict_vals
